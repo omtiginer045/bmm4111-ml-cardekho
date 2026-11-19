@@ -30,6 +30,22 @@ def parse_number(s: pd.Series) -> pd.Series:
     return out.replace(0, np.nan)
 
 
+def iqr_outliers(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    """Sütun başına IQR (1.5 x IQR) sınırları ve sınır dışı değer sayısı. Yalnız raporlar; hiçbir satır silinmez.
+
+    NaN değerler sayılmaz; oran, dolu değerlere göre hesaplanır.
+    """
+    rows = []
+    for c in cols:
+        s = df[c].dropna()
+        q1, q3 = s.quantile(0.25), s.quantile(0.75)
+        lo, hi = q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)
+        n = int(((s < lo) | (s > hi)).sum())
+        rows.append({"sütun": c, "Q1": q1, "Q3": q3, "alt_sınır": lo, "üst_sınır": hi,
+                     "aykırı_sayısı": n, "aykırı_oranı": round(n / len(s), 4)})
+    return pd.DataFrame(rows)
+
+
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Plandaki veri kararlarını uygular. Eksik değerler burada doldurulmaz (imputer pipeline içinde)."""
     # Aynı satır hem train'de hem test'te olmasın diye tekrarlar bölmeden önce silinir.

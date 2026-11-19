@@ -28,6 +28,11 @@ cd bmm4111-ml-cardekho
 pip install -r requirements.txt
 ```
 
+> **Windows notu:** `jupyter` paketi (jupyterlab) çok uzun dosya yolları içerir. Repo derin bir klasöre
+> klonlanırsa `pip install` Windows'un 260 karakterlik yol sınırına takılıp `OSError: [Errno 2] No such file or directory`
+> hatası verebilir. Çözüm: repoyu kısa bir yola klonlayın (ör. `C:\Users\<ad>\bmm4111-ml-cardekho`) veya
+> [Windows uzun yol desteğini](https://pip.pypa.io/warnings/enable-long-paths) açın. Colab ve Linux/macOS bu sorundan etkilenmez.
+
 ## Testler
 
 ```bash

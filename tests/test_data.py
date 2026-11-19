@@ -33,3 +33,16 @@ def test_clean_real_data_meets_assignment():
     assert df[CLF_TARGET].nunique() == 2
     # 8128 → 6926 (tam tekrar) → 6832 (CNG/LPG) → 6813 (ad/torque farkıyla tekrar)
     assert len(df) == 6813
+
+
+def test_iqr_outliers_bounds_and_counts():
+    from cardekho.data import iqr_outliers
+
+    df = pd.DataFrame({"a": [1, 2, 3, 4, 100, None], "b": [10, 10, 10, 10, 10, 10]})
+    tbl = iqr_outliers(df, ["a", "b"])
+    assert list(tbl.columns) == ["sütun", "Q1", "Q3", "alt_sınır", "üst_sınır", "aykırı_sayısı", "aykırı_oranı"]
+    a = tbl.set_index("sütun").loc["a"]
+    # Q1=2, Q3=4, IQR=2 → sınırlar -1 ve 7; yalnız 100 aykırı, NaN sayılmaz
+    assert (a["alt_sınır"], a["üst_sınır"], a["aykırı_sayısı"]) == (-1.0, 7.0, 1)
+    assert tbl.set_index("sütun").loc["b", "aykırı_sayısı"] == 0
+    assert len(df) == 6  # girdi değiştirilmez, satır silinmez

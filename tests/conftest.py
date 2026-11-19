@@ -66,3 +66,11 @@ def sample_split(sample_train_test):
 @pytest.fixture(scope="session")
 def sample_train_df(sample_train_test):
     return sample_train_test[0]
+
+
+@pytest.fixture(scope="session")
+def sample_split_reg(sample_train_test):
+    from cardekho.regression import get_xy_reg
+
+    tr, te = sample_train_test
+    return (*get_xy_reg(tr), *get_xy_reg(te))

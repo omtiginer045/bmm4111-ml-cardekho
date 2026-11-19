@@ -1,0 +1,4 @@
+Model,accuracy,precision,recall,f1
+Baseline,0.914,0.457,0.5,0.478
+Random Forest,0.924,0.757,0.772,0.764
+ANN (MLP),0.933,0.948,0.615,0.669

@@ -38,3 +38,31 @@ def raw_small():
          "Fourth & Above Owner", "11.5 kmpl", "2982 CC", "168.5 bhp", "343Nm@ 1400-3400rpm", 7],
     ]
     return pd.DataFrame(rows, columns=COLS)
+
+
+@pytest.fixture(scope="session")
+def sample_train_test():
+    """Gerçek bölmeden SEED ile stratified 1500 train / 400 test örneklemi (testler hızlı olsun diye)."""
+    from sklearn.model_selection import train_test_split
+
+    from cardekho.config import CLF_TARGET, SEED
+    from cardekho.data import clean, load_raw
+    from cardekho.split import make_split
+
+    tr, te = make_split(clean(load_raw()))
+    tr = train_test_split(tr, train_size=1500, stratify=tr[CLF_TARGET], random_state=SEED)[0]
+    te = train_test_split(te, train_size=400, stratify=te[CLF_TARGET], random_state=SEED)[0]
+    return tr, te
+
+
+@pytest.fixture(scope="session")
+def sample_split(sample_train_test):
+    from cardekho.classification import get_xy_clf
+
+    tr, te = sample_train_test
+    return (*get_xy_clf(tr), *get_xy_clf(te))
+
+
+@pytest.fixture(scope="session")
+def sample_train_df(sample_train_test):
+    return sample_train_test[0]
